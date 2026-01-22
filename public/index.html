@@ -1,48 +1,208 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QrStream – Cinematic QR Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
-    body {font-family: 'Inter', sans-serif; background: #0a0a1a;}
-    .glass {background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 1rem;}
-    .btn {transition: all .3s;}
-    .btn:hover {box-shadow: 0 0 15px rgba(0,255,255,0.6);}
-    .qr-img {animation: fadeIn 0.8s ease forwards; opacity:0;}
-    @keyframes fadeIn {to {opacity:1; transform: translateY(0);}}
+    :root {
+      --primary: #00d2ff;
+      --secondary: #3a7bd5;
+      --accent: #8e2de2;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #0a0a1a url('/bg-cinematic.png') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+
+    .glass {
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+      border-radius: 1.5rem;
+    }
+
+    .glow-border {
+      position: relative;
+    }
+
+    .glow-border::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(45deg, var(--primary), var(--accent));
+      z-index: -1;
+      border-radius: 1.5rem;
+      opacity: 0.3;
+      filter: blur(5px);
+    }
+
+    .btn-cinematic {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-cinematic:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+    }
+
+    .btn-cinematic:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .qr-container {
+      background: white;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 40px rgba(0, 210, 255, 0.2);
+      animation: qrReveal 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+    }
+
+    @keyframes qrReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .title-gradient {
+      background: linear-gradient(to right, #fff, var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    footer {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+      border: none;
+      border-radius: 0.5rem;
+    }
   </style>
 </head>
-<body class="flex flex-col items-center min-h-screen p-4">
-  <h1 class="text-4xl text-white mb-8">Generate Your Gateway</h1>
-  <div class="glass p-6 w-full max-w-md space-y-4">
-    <input id="urlInput" type="text" placeholder="Enter URL" class="w-full p-2 rounded" />
-    <input id="colorInput" type="color" value="#000000" class="w-full p-2 rounded" />
-    <button id="generateBtn" class="btn w-full bg-gradient-to-r from-cyan-500 to-indigo-600 text-white py-2 rounded">Generate QR</button>
-    <div id="preview" class="flex justify-center mt-4"></div>
-  </div>
+
+<body class="flex flex-col items-center justify-between min-h-screen">
+  <main class="flex flex-col items-center w-full px-4 pt-16 pb-8">
+    <header class="text-center mb-12">
+      <h1 class="text-5xl md:text-6xl font-bold title-gradient mb-2">QrStream</h1>
+      <p class="text-gray-400 font-light tracking-widest uppercase text-sm">Cinematic QR Generator</p>
+    </header>
+
+    <div class="glass glow-border p-8 w-full max-w-lg space-y-6">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-semibold">Destination
+            URL</label>
+          <input id="urlInput" type="text" placeholder="https://your-link.com"
+            class="w-full bg-black/40 border border-white/10 p-4 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 transition-colors" />
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <div class="flex-1">
+            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-semibold">Fill Color</label>
+            <div class="flex items-center space-x-3 bg-black/40 border border-white/10 p-2 rounded-xl">
+              <input id="colorInput" type="color" value="#000000" class="w-10 h-10 bg-transparent cursor-pointer" />
+              <span id="colorLabel" class="text-sm font-mono text-gray-300">#000000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="generateBtn" class="btn-cinematic w-full py-4 rounded-xl text-white text-lg uppercase shadow-lg">
+        Generate Identity
+      </button>
+
+      <div id="preview" class="flex flex-col items-center justify-center mt-6 min-h-[220px]">
+        <div id="placeholder" class="text-gray-600 text-center animate-pulse">
+          <svg class="w-16 h-16 mx-auto mb-2 opacity-20" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-3 0h2v3h-2v-3zm3 3h3v2h-3v-2zm-3 3h2v3h-2v-3zm3 3h3v2h-3v-2zM13 13h2v2h-2v-2zm3 0h2v2h-2v-2z" />
+          </svg>
+          <p class="text-sm font-light">Awaiting transmission...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="w-full py-6 text-center border-t border-white/5">
+    <p class="text-gray-500 text-sm font-light">
+      Designed & Developed by <span class="text-gray-300 font-normal">Apollo Technologies US</span>
+    </p>
+  </footer>
+
   <script>
     const btn = document.getElementById('generateBtn');
+    const colorInput = document.getElementById('colorInput');
+    const colorLabel = document.getElementById('colorLabel');
+    const urlInput = document.getElementById('urlInput');
+    const preview = document.getElementById('preview');
+
+    colorInput.addEventListener('input', (e) => {
+      colorLabel.textContent = e.target.value.toUpperCase();
+    });
+
     btn.addEventListener('click', async () => {
-      const url = document.getElementById('urlInput').value;
-      const fill = document.getElementById('colorInput').value;
-      if (!url) return alert('Please enter a URL');
-      const resp = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({url, fill})
-      });
-      if (!resp.ok) return alert('Error generating QR');
-      const blob = await resp.blob();
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(blob);
-      img.className = 'qr-img rounded shadow-lg';
-      const preview = document.getElementById('preview');
-      preview.innerHTML = '';
-      preview.appendChild(img);
+      const url = urlInput.value.trim();
+      const fill = colorInput.value;
+
+      if (!url) return alert('Please enter a destination URL');
+
+      const originalText = btn.textContent;
+      btn.textContent = 'Transmitting...';
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, fill })
+        });
+
+        if (!resp.ok) throw new Error('Generation failed');
+
+        const blob = await resp.blob();
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(blob);
+        img.className = 'w-64 h-64 rounded-lg shadow-2xl';
+
+        preview.innerHTML = '';
+        const container = document.createElement('div');
+        container.className = 'qr-container';
+        container.appendChild(img);
+        preview.appendChild(container);
+
+      } catch (err) {
+        alert('Transmission error: ' + err.message);
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    // Handle Enter key
+    urlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') btn.click();
     });
   </script>
 </body>
+
 </html>
