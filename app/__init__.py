@@ -2,9 +2,10 @@ import os
 from flask import Flask, send_from_directory
 
 def create_app():
-    # Use absolute path for static_folder to ensure it works on Vercel
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    static_folder = os.path.join(base_dir, '..', 'public')
+    # Vercel's structure usually places the root at /var/task
+    # We use a path relative to this file to find 'public'
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    static_folder = os.path.join(root_dir, 'public')
     app = Flask(__name__, static_folder=static_folder, static_url_path='')
     from .routes import bp as api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
